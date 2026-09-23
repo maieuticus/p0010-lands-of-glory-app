@@ -1,0 +1,413 @@
+# DV-Konzept: {{PROJECT_NAME}}
+
+**Status:** Grundgerüst; fachliche Abschnitte vor der ersten Umsetzung ausfüllen.
+**Technologieprofil:** {{STACK}}
+**Entwicklungsdienste:** {{SERVICES}}
+**Rezept:** {{RECIPE}}
+
+Dieses Dokument enthält die verbindliche Projektbeschreibung einschließlich
+Projektziel, Architektur, Entwicklung und Betrieb. README und Quickstart
+verlinken hierher. Keine parallelen Konzeptdokumente anlegen.
+
+## Aktueller Arbeitsstand
+
+**Stand:** {{CREATED_DATE}} (Projekterzeugung)
+
+**Aktives Feature:** Noch keines; Einrichtung und Projektklärung.
+
+### Zuletzt erledigt
+
+- Grundgerüst mit Profil `{{STACK}}`, Diensten `{{SERVICES}}` und
+  Rezept `{{RECIPE}}` erzeugt.
+
+### Aktuell in Arbeit
+
+- Einrichtung und fachliche Klärung stehen noch aus.
+
+### Nächste Schritte
+
+1. [Einrichtung](#einrichtung) durchführen, Dateien prüfen und den Ausgangsstand in Git sichern.
+2. [Projektziel](#projektziel) und [offene Entscheidungen](#offene-entscheidungen) konkretisieren.
+3. Spec Kit initialisieren und das erste Feature unter [specs/](../specs/README.md) spezifizieren.
+
+### Blockaden und Prüfstatus
+
+- Noch keine Projektprüfungen ausgeführt; nach der Einrichtung
+  `python scripts/check.py` ausführen und Ergebnisse hier festhalten.
+- Fachlicher Umfang und Grundsatzentscheidungen sind noch offen.
+
+## Inhalt
+
+- [Aktueller Arbeitsstand](#aktueller-arbeitsstand)
+- [Projektziel](#projektziel)
+- [Architektur](#architektur)
+- [Einrichtung](#einrichtung)
+- [Entwicklung](#entwicklung)
+- [Betrieb](#betrieb)
+- [Wissensaustausch](#wissensaustausch)
+- [Offene Entscheidungen](#offene-entscheidungen)
+
+## Projektziel
+
+**Zu konkretisieren:** Welches Problem wird für welche Nutzer gelöst? Welches
+überprüfbare Ergebnis bildet die erste Version? Was bleibt ausdrücklich außerhalb
+des Umfangs? Fachliche Kriterien noch vor der Implementierung abstimmen.
+
+Ursprüngliche Konzepte liegen unter `docs/raw-materials/`. Konkrete Anforderungen
+und Akzeptanzkriterien werden je Feature unter `specs/` gepflegt.
+
+Das Template liefert das Grundgerüst samt Profil und Prüfungen. Spec Kit richtet
+die gewählte Agent-Integration ein; der Coding-Agent bearbeitet damit einzelne
+Features. Projektgrundlage, Werkzeugeinrichtung und Feature-Umsetzung werden
+jeweils geprüft. Die Spec-Kit-Integration ist nach der Projekterzeugung noch
+nicht initialisiert.
+
+Das Template stellt `main` als stabilen Ausgangspunkt und `development` als
+gemeinsamen Entwicklungszweig bereit. Bei der Erstellung aus einer GitHub-
+Vorlage muss **Include all branches** ausgewählt werden, damit beide Branches
+angelegt werden. Mit der CLI lautet die relevante Option
+`--include-all-branches`.
+
+## Architektur
+
+Das Grundgerüst trennt Entwicklungsumgebung, Entwicklungsmethodik,
+Konfiguration, Dokumentation und Anwendungscode:
+
+| Bereich | Maßgebliche Ablage |
+| --- | --- |
+| Entwicklungscontainer und ausgewählte lokale Dienste | `.devcontainer/` |
+| CI, Issues und Pull Requests | `.github/` |
+| Constitution, Vorlagen und Workflow | `.specify/` |
+| Projektmetadaten und Referenz-Repositories | `config/` |
+| Projektbeschreibung | Dieses DV-Konzept |
+| Arbeitsstand und nächste Schritte | [Aktueller Arbeitsstand](#aktueller-arbeitsstand) in diesem Dokument |
+| Feature-Spezifikation, Plan und Aufgaben | `specs/<nummer>-<name>/` |
+| Anwendungscode und Tests | Ökosystemstruktur des gewählten Profils |
+| Produktionsartefakte | Bei Bedarf `deploy/` |
+
+**Zu konkretisieren:** Komponenten, Verantwortlichkeiten, Schnittstellen,
+Datenmodell, externe Dienste und Qualitätsanforderungen.
+
+`config/project.yaml` erfasst die Template-Herkunft, Profile und Prüfkommandos.
+`config/repositories.yaml` beschreibt die vorgesehenen Referenz- und Beitragsziele.
+Diese Dateien gehören zur Template-Konvention, nicht zur Spec-Kit-API.
+
+Wesentliche Entscheidungen erhalten bei Bedarf ein Protokoll unter
+`docs/decisions/`. Den geltenden Architekturstand in diesem Abschnitt pflegen.
+
+## Einrichtung
+
+### Voraussetzungen
+
+- Python ab 3.11 für gemeinsame Skripte.
+- Git; optional GitHub CLI für Repository-Zugriff.
+- Für den Devcontainer Docker mit Compose sowie VS Code Dev Containers oder Codespaces.
+- Ohne Container die Laufzeit des gewählten Technologieprofils installieren.
+
+### Entwicklungscontainer
+
+Vor dem ersten Öffnen optional den lokalen Referenzpfad setzen:
+
+```powershell
+python scripts/container_init.py --references-root C:\Git
+```
+
+Linux/macOS verwenden den tatsächlichen Hostpfad. Danach das Projekt mit
+„Reopen in Container“ öffnen. `initializeCommand` bereitet ignorierte lokale
+Dateien vor. `.env` wird nur erstellt, wenn sie fehlt; `__GENERATE__` wird
+durch zufällige lokale Passwörter ersetzt. Vorhandene Konfiguration bleibt erhalten.
+
+Ohne Referenzen genügt `python scripts/container_init.py`. Der Hostpfad bleibt
+in `.devcontainer/local.json`; `REFERENCE_REPOS_ROOT` kann ihn überschreiben.
+Der Mount `/references/repos` ist nur lesbar. Das aktuelle Projekt ist separat
+unter `/workspaces/project` schreibbar.
+
+Codespaces unterstützt keine lokalen Hostpfade. Dort Referenzen separat klonen
+oder über die GitHub CLI lesen. Die Codespaces-Rechte beschränken Remote-Inhalte;
+lokale Klone sind dadurch nicht automatisch schreibgeschützt. Den GitHub-Owner
+bei Bedarf in `config/repositories.yaml` und `devcontainer.json` anpassen.
+
+### Abhängigkeiten
+
+Im Projektverzeichnis:
+
+```sh
+{{SETUP_COMMANDS}}
+```
+
+Bei TypeScript die erzeugte `package-lock.json` committen; CI verwendet `npm ci`.
+Für Python bei der Festlegung der Anwendungsabhängigkeiten einen passenden
+Lock-/Constraint-Stand ergänzen. Die Toolversionen des Grundgerüsts stehen in
+`config/project.yaml` und `scripts/requirements.txt`.
+
+### Spec Kit
+
+Im Projekt-Root arbeiten und zuerst die [Abhängigkeiten](#abhängigkeiten)
+installieren. Der Generator initialisiert kein Git-Repository: bei Bedarf
+`git init` ausführen, Dateien prüfen und den Ausgangsstand lokal committen.
+Die vorhandene Constitution ist die Grundlage; keine zweite Vorlage anlegen.
+
+Die CLI-Version steht als `speckit_version` in `config/project.yaml`.
+Im Container ist sie bereits installiert. Außerhalb dieselbe Version
+bereitstellen; für den mitgelieferten Stand lautet die Installation:
+
+```sh
+python -m pip install specify-cli==1.0.7
+specify version
+```
+
+Mit vorhandenem `uv` ist `uv tool install specify-cli==1.0.7` eine Alternative.
+Auch den gewählten Coding-Agenten in der verwendeten Umgebung bereitstellen;
+der Devcontainer installiert ihn nicht automatisch.
+
+**Linux-Container / Bash:** Einmalig die gewünschte Integration initialisieren,
+zum Beispiel Codex:
+
+```sh
+python scripts/init_speckit.py --integration codex
+```
+
+Alternativ `--integration copilot` oder `--integration cursor-agent` wählen.
+Das Skript prüft die festgelegte Version, erhält die Constitution und verwendet
+Bash-Skripte (`--script sh`). Es besitzt keinen eigenen `--script`-Parameter.
+
+**Native Windows PowerShell:** Nach Versionsprüfung und gesichertem
+Ausgangsstand stattdessen diesen zusammenhängenden Block für ein noch nicht
+initialisiertes Projekt verwenden; er erhält die vorhandene Constitution:
+
+```powershell
+if (Test-Path -LiteralPath .specify/integration.json) {
+    throw 'Bereits initialisiert; die Integrationsverwaltung verwenden.'
+}
+$constitutionPath = (Resolve-Path -LiteralPath .specify/memory/constitution.md).Path
+$constitutionBytes = [System.IO.File]::ReadAllBytes($constitutionPath)
+try {
+    specify init --here --force --integration codex --script ps
+    if ($LASTEXITCODE -ne 0) { throw 'Spec-Kit-Initialisierung fehlgeschlagen.' }
+}
+finally {
+    [System.IO.File]::WriteAllBytes($constitutionPath, $constitutionBytes)
+}
+```
+
+Auch hier bei Bedarf `codex` durch die gewünschte Integration ersetzen.
+`--here` wählt den aktuellen Ordner, `--force` erlaubt die Initialisierung im
+gefüllten Projekt und `--script ps` wählt PowerShell. Bei einem Fehler den
+Zwischenstand prüfen, bevor ein weiterer Versuch erfolgt.
+
+Anschließend `specify integration list` und `specify integration status`
+ausführen, mit `git status` und `git diff` die Änderungen prüfen und neue
+Dateien zusätzlich lesen. Die geprüften Integrationsdateien in einem eigenen
+lokalen Commit sichern. Bei einem späteren Wiedereinstieg keine erneute
+Initialisierung durchführen. Für geplante Versionswechsel den manifestgestützten
+Weg `specify integration upgrade <integration>` verwenden und Änderungen prüfen.
+
+Die Feature-Schritte gehören in den **Agenten-Chat**. Spec Kit 1.0.7 installiert
+Codex-Skills unter `.agents/skills/`, Copilot-Skills standardmäßig unter
+`.github/skills/`:
+
+| Agent | Beispiel im Chat |
+| --- | --- |
+| Codex | `$speckit-specify` |
+| GitHub Copilot, Standardmodus | `/speckit-specify` |
+
+Bei anderen Agenten oder Installationsmodi die dort angebotene Schreibweise
+verwenden; `/speckit.specify` aus Referenztexten gilt nicht für jede Integration.
+Siehe [Integrationsreferenz für 1.0.7](https://github.com/github/spec-kit/blob/v1.0.7/docs/reference/integrations.md).
+
+### Befehle und Aufruforte
+
+Im Terminal zeigt `Get-Location` unter PowerShell beziehungsweise `pwd` unter
+Bash das aktuelle Verzeichnis. Mit `python --version` den Interpreter prüfen;
+falls die Umgebung nur `python3` bereitstellt, diesen entsprechend verwenden.
+
+| Terminalbefehl | Zweck |
+| --- | --- |
+| `git status` | Branch und vorgemerkte, nicht vorgemerkte sowie unversionierte Änderungen ansehen. |
+| `specify version` | CLI-Version mit `config/project.yaml` vergleichen. |
+| `specify check` | Verfügbare Agent-CLI-Werkzeuge prüfen; IDE-Integrationen werden übersprungen. |
+| `specify integration list` | Installierte Integrationen und Standardintegration ansehen. |
+| `specify integration status` | Verwaltete Integrationsdateien und gemeinsame Spec-Kit-Struktur diagnostizieren. |
+| `python scripts/status.py` | Dokumentierten Arbeitsstand lesen. |
+| `python scripts/check.py` | Dokumentlinks, Syntax und konfigurierte Projektprüfungen ausführen. |
+| `git diff` / `git diff --cached` | Nicht vorgemerkte / vorgemerkte Änderungen prüfen; unversionierte Dateien zusätzlich lesen. |
+
+Die [CLI-Referenz für 1.0.7](https://github.com/github/spec-kit/blob/v1.0.7/docs/reference/core.md)
+beschreibt `specify check` als Werkzeugcheck. Für die Anwendung gelten die
+[Projektprüfungen](#prüfungen). Abhängigkeiten gemäß dem gewählten Profil
+installieren; `uv sync` und `uv run pytest` sind keine allgemeinen Schritte
+dieses Templates.
+
+## Entwicklung
+
+### Wiedereinstieg und Pflege des Arbeitsstands
+
+Der Link direkt unter dem README-Titel führt zum [aktuellen Arbeitsstand](#aktueller-arbeitsstand).
+Im Projekt-Terminal zeigt derselbe Einstieg den gespeicherten Abschnitt an:
+
+```sh
+python scripts/status.py
+```
+
+Der Befehl liest ausschließlich das DV-Konzept und benötigt nur Python ab 3.11.
+Er funktioniert auch vor der Git-Initialisierung und ohne Profilabhängigkeiten.
+Der angegebene Stand ist eine gepflegte Zusammenfassung; die Anzeige führt
+keinen Git-Abgleich und keine Tests aus. Fehlende oder leere Abschnitte werden
+mit einer Fehlermeldung gemeldet.
+
+In VS Code zeigt die Aufgabe „Projektstatus anzeigen“ den Abschnitt beim
+Ordneröffnen im Terminal. Dafür dem Workspace vertrauen und in der
+Befehlspalette über „Tasks: Manage Automatic Tasks“ automatische Aufgaben für
+diesen Workspace erlauben. Über „Tasks: Run Task“ ist sie auch manuell
+ausführbar. Python muss in der geöffneten Umgebung verfügbar sein.
+
+Agenten gleichen den Arbeitsstand zu Beginn einer neuen Arbeitssitzung mit
+Git und den relevanten Feature-Aufgaben ab und zeigen den Überblick in ihrer
+ersten inhaltlichen Antwort. Das bloße Öffnen eines Ordners startet keinen
+Codex-Chat. Nach wesentlichen beauftragten Änderungen und vor einer Übergabe
+werden Datum, aktives Feature, Erledigtes, laufende Arbeit, priorisierte nächste
+Schritte, Blockaden und tatsächlich ausgeführte Prüfungen hier aktualisiert.
+Details bleiben in den verlinkten Feature-Aufgaben und Prüfergebnissen.
+
+### Feature-Ablauf
+
+Rohmaterialien und Wissen sichten, Feature spezifizieren, Unklarheiten klären,
+technischen Plan erstellen, Aufgaben ableiten, Konsistenz prüfen, implementieren,
+testen und Ergebnis gegen die Akzeptanzkriterien prüfen.
+
+Die vorhandene Constitution einmal auf das Projekt konkretisieren. Danach
+für jeden kleinen, unabhängig prüfbaren Funktionsumfang die passenden
+Spec-Kit-Schritte im Agenten-Chat aufrufen:
+
+| Schritt | Ergebnis |
+| --- | --- |
+| `specify` | Nutzerziel, Verhalten, Akzeptanzkriterien und ausgeschlossener Umfang in `spec.md`. |
+| `clarify` | Offene fachliche Fragen vor der technischen Planung klären. |
+| `plan` | Technische Umsetzung und Prüfungen in `plan.md` begründen. |
+| `checklist` | Nach Bedarf Klarheit und Vollständigkeit der Anforderungen prüfen. |
+| `tasks` | Ausführbare Aufgaben aus Spec und Plan in `tasks.md` ableiten. |
+| `analyze` | Vor größeren Umsetzungen Konsistenz und wesentliche Lücken prüfen. |
+| `implement` | Aufgaben einschließlich relevanter Tests umsetzen. |
+| `converge` | Umsetzung mit Anforderungen abgleichen; offene Lücken nacharbeiten. |
+
+Die Namen mit der unter [Spec Kit](#spec-kit) beschriebenen Aufrufsyntax
+verwenden, etwa `$speckit-plan` in Codex. Rohmaterialien auf Quelle, Stand und
+Widersprüche prüfen. Abgestimmte Grundsatzentscheidungen hier pflegen;
+Feature-Artefakte gehören gemeinsam nach `specs/<nummer>-<name>/`.
+Vorhandene technische Randbedingungen beachten und zusätzliche Technologien
+erst im Plan begründen. Umfangreiche Vorlagen oder Beispielprojekte bedeuten
+keinen Auftrag, alle Funktionen oder Verzeichnisse sofort umzusetzen.
+
+Vor dem Abschluss Akzeptanzkriterien, tatsächliche Tests und Git-Diff prüfen,
+auch neue Dateien lesen und den [Arbeitsstand](#aktueller-arbeitsstand) pflegen.
+Dateien für einen lokalen Commit gezielt vormerken und mit `git diff --cached`
+prüfen. Ein Push bleibt ein eigener Veröffentlichungsschritt im beauftragten Umfang.
+
+Der vorbereitete Workflow kann nach Klärung der Anforderungen ausgeführt werden:
+
+```sh
+specify workflow run .specify/workflows/project-sdd/workflow.yml -i spec="Ein kleines Feature"
+```
+
+Der abschließende Review prüft offene Aufgaben aus `converge` und das
+DV-Konzept. Bei Lücken nacharbeiten und erneut prüfen. Kleine Korrekturen
+benötigen nur einen ihrem Umfang angemessenen Prozess.
+
+### Prüfungen
+
+```sh
+python scripts/check.py
+```
+
+Die gemeinsamen Dokument- und Syntaxprüfungen werden durch diese Profilprüfungen ergänzt:
+
+```sh
+{{CHECK_COMMANDS}}
+```
+
+Beim API-Rezept startet `uvicorn app.main:app --host 0.0.0.0 --port 8000` die
+Anwendung. `/health` prüft ausschließlich Liveness. Der eingecheckte Vertrag
+unter `openapi/` muss zur Implementierung passen. Datenbanktests benötigen
+`RUN_DATABASE_TESTS=1` und die PostgreSQL-Verbindungsvariablen; im Devcontainer
+sind diese über `.env` gesetzt. Ohne das Flag wird der DB-Test sichtbar übersprungen.
+Die API-CI startet eine wegwerfbare Datenbank mit `.env.test.example`.
+
+Für zusätzliche Anforderungen konkrete Tests und Befehle im Feature-Plan
+festhalten. Tatsächlich ausgeführte und nicht ausgeführte Prüfungen unterscheiden.
+
+## Betrieb
+
+### Lokale Dienste
+
+Nur die bei Erzeugung gewählten Dienste werden gestartet. Sie sind
+Entwicklungsdienste. Benannte Docker-Volumes speichern ihre Daten.
+Im Container gibt es keinen Host-Docker-Socket.
+
+Verwaltung auf dem Docker-Host nach `python scripts/container_init.py`:
+
+```sh
+docker compose -f .devcontainer/compose.yaml -f .devcontainer/compose.local.yaml ps
+docker compose -f .devcontainer/compose.yaml -f .devcontainer/compose.local.yaml logs --tail 100
+docker compose -f .devcontainer/compose.yaml -f .devcontainer/compose.local.yaml down
+```
+
+Das normale `down` erhält Daten. `down --volumes` entfernt sie und ist kein
+Routinebefehl. Geänderte PostgreSQL-Startvariablen ändern keine bereits in einem
+Volume angelegten Benutzer oder Passwörter.
+
+Keycloak startet bei Auswahl im Entwicklungsmodus mit einem leeren Realm.
+Clients, Redirect-URIs und Nutzer erst für die konkrete Anwendung einrichten.
+Grafana/Prometheus enthalten bei Auswahl zunächst Infrastruktur-Selbstbeobachtung;
+Anwendungsmetriken und zusätzliche Dashboards gezielt ergänzen.
+
+### Bereitstellung
+
+**Vor dem ersten Release konkretisieren:** Zielumgebung, Zuständigkeit,
+Image-/Paketversion, Konfiguration, Secrets, Release-Befehl, Health-/Funktionstest,
+Rollback, Backup und Wiederherstellung.
+
+Das API-Rezept liefert `deploy/Dockerfile`. Bauen aus dem Repository-Root:
+`docker build -f deploy/Dockerfile -t PROJECT_IMAGE .`.
+Dies ist noch kein produktives Deployment. Entwicklungsdienste und
+Testzugangsdaten dürfen nicht als Produktionskonfiguration übernommen werden.
+
+### Datenmigration
+
+Bei Datenänderungen Migration, Kompatibilität, Tests und Rückweg gemeinsam
+planen. Produktionsbackups liegen außerhalb des Git-Verzeichnisses.
+`db/init.sql` darf nur frische Testdatenbanken initialisieren. Ein
+Migrationswerkzeug und dessen konkreten Release-Befehl vor der ersten
+Schemaänderung festlegen.
+
+### Störungen und Wiederherstellung
+
+**Zu konkretisieren:** Ansprechpartner, Diagnosebefehle, typische Fehlerbilder,
+Backup-Ort, Aufbewahrung und getesteter Wiederherstellungsablauf.
+
+## Wissensaustausch
+
+Andere Repositories werden als Referenz gelesen. `config/repositories.yaml`
+legt Ziele für Template- und Knowledge-Base-Beiträge fest. Allgemeine
+Technologieerkenntnisse gehören in die Knowledge Base, wiederverwendbare
+Dateien und Abläufe in das Template, Projektdetails in dieses Dokument.
+
+Referenzdateien bleiben unverändert. Einen Beitragsklon vorbereiten:
+
+```sh
+python scripts/prepare_contribution.py knowledge --output .artifacts/contributions/knowledge --branch improve/project-learning
+```
+
+Zuerst die `AGENTS.md` des Ziel-Repositories lesen. Das Skript veröffentlicht
+nichts. Issues, Pushes und PRs erfolgen im ausdrücklich beauftragten Umfang
+mit gezielten Rechten; das normale Referenz-Token benötigt keine pauschalen
+Schreibrechte auf fremde Inhalte.
+
+**Relevante Wissensquellen:** Artikel und den bei wichtigen Entscheidungen
+verwendeten Stand hier ergänzen.
+
+## Offene Entscheidungen
+
+- Fachlicher Umfang und Akzeptanzkriterien der ersten Version.
+- Konkrete Komponenten, Verträge und Datenmodelle.
+- Zusätzliche Qualitäts-, Datenschutz- und Betriebsanforderungen.
+- Produktionsumgebung, Migrationen, Backups und Wiederherstellung.
