@@ -1,0 +1,23 @@
+{
+  "name": "template-spec-kit",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "codespaces": {
+      "repositories": {
+        "maieuticus/*": {
+          "permissions": {
+            "contents": "write",
+            "issues": "write",
+            "pull_requests": "write"
+          }
+        }
+      }
+    },
+    "vscode": {
+      "extensions": []
+    }
+  }
+}
