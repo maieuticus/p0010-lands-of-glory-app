@@ -1,0 +1,37 @@
+# {{PROJECT_NAME}}
+
+**[Aktueller Arbeitsstand →](docs/DV_KONZEPT.md#aktueller-arbeitsstand)**
+
+Zuletzt erledigt · Aktuell in Arbeit · Nächste Schritte · Blockaden
+
+**Profil:** {{STACK}} | **Dienste:** {{SERVICES}} | **Rezept:** {{RECIPE}}
+
+Projektziel, Architektur, Entwicklung und Betrieb stehen gemeinsam im
+[DV-Konzept](docs/DV_KONZEPT.md).
+
+Beim Erzeugen dieses Projekts über GitHub **Include all branches** aktivieren,
+damit `main` und `development` aus dem Template übernommen werden. Ohne diese
+Option wird nur `main` kopiert.
+
+## Start
+
+1. [Einrichtung](docs/DV_KONZEPT.md#einrichtung) durchführen.
+2. Projektziel und offene Entscheidungen im DV-Konzept konkretisieren.
+3. Das erste kleine Feature unter [specs/](specs/README.md) spezifizieren.
+
+## Orientierung
+
+- [DV-Konzept](docs/DV_KONZEPT.md)
+- [Spec Kit einrichten und Agentenaufrufe](docs/DV_KONZEPT.md#spec-kit)
+- [Befehle erklärt](docs/DV_KONZEPT.md#befehle-und-aufruforte)
+- [Feature-Ablauf](docs/DV_KONZEPT.md#feature-ablauf)
+- [Constitution](.specify/memory/constitution.md)
+- [Arbeitsregeln](AGENTS.md)
+- [Dokumentation](docs/README.md)
+- [Feature-Übersicht](specs/README.md)
+
+## Prüfen
+
+```sh
+python scripts/check.py
+```

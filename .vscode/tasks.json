@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Projektstatus anzeigen",
+      "type": "process",
+      "command": "python",
+      "args": ["${workspaceFolder}/scripts/status.py"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "runOptions": {"runOn": "folderOpen"},
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "clear": true,
+        "echo": false,
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Projekt prüfen",
+      "type": "process",
+      "command": "python",
+      "args": ["scripts/check.py"],
+      "group": {"kind": "test", "isDefault": true},
+      "problemMatcher": []
+    }
+  ]
+}
